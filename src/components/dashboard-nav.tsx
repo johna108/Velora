@@ -22,6 +22,11 @@ import {
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/profile", label: "Profile", icon: User },
+  {
+    href: "/dashboard/pricing",
+    label: "Pricing",
+    icon: CreditCard,
+  },
   { href: "/dashboard/tasks", label: "Tasks", icon: ListChecks },
   { href: "/dashboard/feedback", label: "Feedback", icon: MessageSquare },
   {
@@ -33,11 +38,6 @@ const navItems = [
     href: "/dashboard/pitch-generator",
     label: "Pitch Generator",
     icon: FileText,
-  },
-  {
-    href: "/dashboard/pricing",
-    label: "Pricing",
-    icon: CreditCard,
   },
 ];
 

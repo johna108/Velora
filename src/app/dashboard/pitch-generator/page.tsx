@@ -7,6 +7,7 @@ import { FileText, Loader2 } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { generatePitchAction } from "./actions";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 type PitchSectionProps = {
     title: string;
@@ -22,10 +23,15 @@ function PitchSection({ title, children }: PitchSectionProps) {
     )
 }
 
+type Slide = {
+    title: string;
+    content: string;
+};
+
 export default function PitchGeneratorPage() {
     const {name, industry, targetMarket, businessModel} = startupProfileData;
     const [isPending, startTransition] = useTransition();
-    const [generatedPitch, setGeneratedPitch] = useState<string | null>(null);
+    const [generatedSlides, setGeneratedSlides] = useState<Slide[] | null>(null);
     const { toast } = useToast();
 
     const handleGeneratePitch = () => {
@@ -37,8 +43,8 @@ export default function PitchGeneratorPage() {
                     title: "Error",
                     description: result.error,
                 });
-            } else if (result.pitch) {
-                setGeneratedPitch(result.pitch);
+            } else if (result.slides) {
+                setGeneratedSlides(result.slides);
                 toast({
                     title: "Success!",
                     description: "AI has generated your investor pitch.",
@@ -56,7 +62,7 @@ export default function PitchGeneratorPage() {
             AI Investor Pitch Generator
           </CardTitle>
           <CardDescription>
-            Use your startup data to generate a compelling pitch outline.
+            Use your startup data to generate a compelling pitch deck and preview the slides.
           </CardDescription>
         </CardHeader>
         <CardContent className="min-h-[400px]">
@@ -65,8 +71,27 @@ export default function PitchGeneratorPage() {
                     <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                     <p className="ml-4 text-muted-foreground">Generating your pitch...</p>
                 </div>
-            ) : generatedPitch ? (
-                <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap">{generatedPitch}</div>
+            ) : generatedSlides ? (
+                <Carousel className="w-full max-w-xl mx-auto">
+                    <CarouselContent>
+                        {generatedSlides.map((slide, index) => (
+                        <CarouselItem key={index}>
+                            <div className="p-1">
+                            <Card className="flex flex-col justify-center p-6 h-[350px]">
+                                <CardHeader>
+                                    <CardTitle className="text-center">{slide.title}</CardTitle>
+                                </CardHeader>
+                                <CardContent className="text-center text-sm whitespace-pre-wrap">
+                                    {slide.content}
+                                </CardContent>
+                            </Card>
+                            </div>
+                        </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                </Carousel>
             ) : (
                 <div className="space-y-8">
                     <PitchSection title="1. Problem">
@@ -113,7 +138,7 @@ export default function PitchGeneratorPage() {
                     "Generate Pitch"
                 )}
             </Button>
-            <Button variant="outline" disabled>Download as PDF</Button>
+            <Button variant="outline" disabled>Download as PPT</Button>
         </CardFooter>
       </Card>
     </div>

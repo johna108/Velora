@@ -21,11 +21,11 @@ export async function generatePitchAction() {
       traction,
     });
 
-    if (!result || !result.pitch) {
+    if (!result || !result.slides) {
       return { error: "AI failed to generate a pitch. Please try again." };
     }
 
-    return { pitch: result.pitch };
+    return { slides: result.slides };
   } catch (e) {
     console.error(e);
     return { error: "An unexpected error occurred. Please try again later." };

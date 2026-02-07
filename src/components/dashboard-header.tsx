@@ -77,9 +77,9 @@ export function DashboardHeader() {
         </BreadcrumbList>
       </Breadcrumb>
       <div className="relative ml-auto flex-1 md:grow-0" />
-      <Button asChild variant="outline" size="sm">
+      <Button asChild size="sm">
         <Link href="/dashboard/pricing">
-          <CreditCard className="mr-2" />
+          <CreditCard className="mr-2 h-4 w-4" />
           Pricing
         </Link>
       </Button>

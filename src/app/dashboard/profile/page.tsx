@@ -36,6 +36,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function ProfilePage() {
   const [profileData, setProfileData] =
     useState<StartupProfile>(startupProfileData);
+  const [isEditing, setIsEditing] = useState(false);
   const { toast } = useToast();
 
   const handleInputChange = (
@@ -56,6 +57,11 @@ export default function ProfilePage() {
       title: "Success!",
       description: "Your startup profile has been saved.",
     });
+    setIsEditing(false);
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
   };
 
   return (
@@ -77,6 +83,7 @@ export default function ProfilePage() {
                   value={profileData.name}
                   onChange={handleInputChange}
                   placeholder="e.g., InnovateAI"
+                  disabled={!isEditing}
                 />
               </div>
               <div className="grid gap-2">
@@ -86,6 +93,7 @@ export default function ProfilePage() {
                   value={profileData.industry}
                   onChange={handleInputChange}
                   placeholder="e.g., Artificial Intelligence"
+                  disabled={!isEditing}
                 />
               </div>
             </div>
@@ -96,6 +104,7 @@ export default function ProfilePage() {
                 value={profileData.businessModel}
                 onChange={handleInputChange}
                 placeholder="e.g., B2B Subscription"
+                disabled={!isEditing}
               />
             </div>
             <div className="grid gap-2">
@@ -106,6 +115,7 @@ export default function ProfilePage() {
                 onChange={handleInputChange}
                 placeholder="Describe your target customers"
                 className="min-h-24"
+                disabled={!isEditing}
               />
             </div>
             <div className="grid gap-2">
@@ -113,6 +123,7 @@ export default function ProfilePage() {
               <Select
                 value={profileData.stage}
                 onValueChange={handleSelectChange}
+                disabled={!isEditing}
               >
                 <SelectTrigger id="stage">
                   <SelectValue placeholder="Select stage" />
@@ -128,7 +139,11 @@ export default function ProfilePage() {
           </form>
         </CardContent>
         <CardFooter className="border-t px-6 py-4">
-          <Button onClick={handleSaveChanges}>Save Changes</Button>
+          {isEditing ? (
+            <Button onClick={handleSaveChanges}>Save Changes</Button>
+          ) : (
+            <Button onClick={handleEdit}>Edit</Button>
+          )}
         </CardFooter>
       </Card>
 

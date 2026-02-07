@@ -35,21 +35,35 @@ import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 
+type TaskStatus = "Todo" | "In Progress" | "Done";
+
 type TaskColumnProps = {
-  title: "Todo" | "In Progress" | "Done";
+  title: TaskStatus;
   tasks: Task[];
+  onDragStart: (e: React.DragEvent<HTMLDivElement>, taskId: string) => void;
+  onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDrop: (e: React.DragEvent<HTMLDivElement>, status: TaskStatus) => void;
 };
 
-function TaskColumn({ title, tasks }: TaskColumnProps) {
+function TaskColumn({ title, tasks, onDragStart, onDragOver, onDrop }: TaskColumnProps) {
   return (
-    <div className="flex flex-col gap-4">
+    <div
+      className="flex flex-col gap-4 p-4 bg-secondary/50 rounded-lg min-h-[200px]"
+      onDragOver={onDragOver}
+      onDrop={(e) => onDrop(e, title)}
+    >
       <div className="flex items-center justify-between">
         <h3 className="font-semibold text-lg">{title}</h3>
         <span className="text-sm text-muted-foreground">{tasks.length} tasks</span>
       </div>
       <div className="flex flex-col gap-4">
         {tasks.map((task) => (
-          <Card key={task.id}>
+          <Card 
+            key={task.id}
+            draggable
+            onDragStart={(e) => onDragStart(e, task.id)}
+            className="cursor-move"
+          >
             <CardHeader className="flex flex-row items-center justify-between p-4">
               <h4 className="font-semibold leading-none">{task.title}</h4>
               <DropdownMenu>
@@ -122,6 +136,23 @@ export default function TasksPage() {
     form.reset();
     setIsDialogOpen(false);
   }
+
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, taskId: string) => {
+    e.dataTransfer.setData("taskId", taskId);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+  
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, newStatus: TaskStatus) => {
+    const taskId = e.dataTransfer.getData("taskId");
+    setTasks(prevTasks =>
+        prevTasks.map(task =>
+          task.id === taskId ? { ...task, status: newStatus } : task
+        )
+      );
+  };
 
   const todoTasks = tasks.filter((task) => task.status === "Todo");
   const inProgressTasks = tasks.filter(
@@ -209,9 +240,9 @@ export default function TasksPage() {
 
         </div>
       <div className="grid md:grid-cols-3 gap-8 items-start">
-        <TaskColumn title="Todo" tasks={todoTasks} />
-        <TaskColumn title="In Progress" tasks={inProgressTasks} />
-        <TaskColumn title="Done" tasks={doneTasks} />
+        <TaskColumn title="Todo" tasks={todoTasks} onDragStart={handleDragStart} onDragOver={handleDragOver} onDrop={handleDrop} />
+        <TaskColumn title="In Progress" tasks={inProgressTasks} onDragStart={handleDragStart} onDragOver={handleDragOver} onDrop={handleDrop} />
+        <TaskColumn title="Done" tasks={doneTasks} onDragStart={handleDragStart} onDragOver={handleDragOver} onDrop={handleDrop} />
       </div>
     </div>
   );

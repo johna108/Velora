@@ -55,8 +55,8 @@ export default function StartupDetailPage({ params }: { params: { id: string } }
                 </nav>
             </header>
 
-            <main className="container mx-auto py-12 px-4 md:px-6">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+            <main className="py-12 px-4 md:px-6">
+                <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
                     <div className="lg:col-span-2 space-y-6">
                         <div className="space-y-2">
                              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline bg-clip-text text-transparent bg-gradient-to-r from-primary to-teal-400">

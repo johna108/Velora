@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  CreditCard,
   FileText,
   LayoutDashboard,
   ListChecks,
@@ -22,11 +21,6 @@ import {
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/profile", label: "Profile", icon: User },
-  {
-    href: "/dashboard/pricing",
-    label: "Pricing",
-    icon: CreditCard,
-  },
   { href: "/dashboard/tasks", label: "Tasks", icon: ListChecks },
   { href: "/dashboard/feedback", label: "Feedback", icon: MessageSquare },
   {

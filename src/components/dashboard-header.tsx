@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, User, CreditCard } from "lucide-react";
+import { Menu, User, CreditCard, Compass } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { DashboardNav } from "./dashboard-nav";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -77,6 +77,12 @@ export function DashboardHeader() {
         </BreadcrumbList>
       </Breadcrumb>
       <div className="relative ml-auto flex-1 md:grow-0" />
+      <Button variant="outline" asChild size="sm">
+        <Link href="/">
+          <Compass className="mr-2 h-4 w-4" />
+          Discover
+        </Link>
+      </Button>
       <Button asChild size="sm">
         <Link href="/dashboard/pricing">
           <CreditCard className="mr-2 h-4 w-4" />

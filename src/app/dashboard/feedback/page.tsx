@@ -27,10 +27,17 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { feedbackData } from "@/lib/data";
+import { feedbackData, type Feedback } from "@/lib/data";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Star } from "lucide-react";
 import { useState } from "react";
@@ -54,36 +61,51 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
-const feedbackRequestSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email." }),
-  message: z
+const addFeedbackSchema = z.object({
+  from: z.string().min(1, { message: "Please enter who the feedback is from." }),
+  content: z
     .string()
     .min(10, { message: "Message must be at least 10 characters." }),
   type: z.enum(["Internal", "External"], {
     required_error: "You need to select a feedback type.",
   }),
+  metric: z.string().refine((val) => !isNaN(parseInt(val, 10)), {
+    message: "Please select a rating.",
+  }),
 });
 
 export default function FeedbackPage() {
-  const internalFeedback = feedbackData.filter((fb) => fb.type === "Internal");
-  const externalFeedback = feedbackData.filter((fb) => fb.type === "External");
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>(feedbackData);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof feedbackRequestSchema>>({
-    resolver: zodResolver(feedbackRequestSchema),
+  const internalFeedback = feedbacks.filter((fb) => fb.type === "Internal");
+  const externalFeedback = feedbacks.filter((fb) => fb.type === "External");
+
+  const form = useForm<z.infer<typeof addFeedbackSchema>>({
+    resolver: zodResolver(addFeedbackSchema),
     defaultValues: {
-      email: "",
-      message: "",
+      from: "",
+      content: "",
       type: "External",
+      metric: "3",
     },
   });
 
-  function onSubmit(values: z.infer<typeof feedbackRequestSchema>) {
-    console.log("Feedback Request Submitted:", values);
+  function onSubmit(values: z.infer<typeof addFeedbackSchema>) {
+    const newFeedback: Feedback = {
+      id: `fb-${Date.now()}`,
+      from: values.from,
+      content: values.content,
+      type: values.type,
+      metric: parseInt(values.metric, 10),
+    };
+
+    setFeedbacks((prev) => [newFeedback, ...prev]);
+
     toast({
-      title: "Request Sent!",
-      description: `Feedback request sent to ${values.email}.`,
+      title: "Feedback Added!",
+      description: "The new feedback has been added to the board.",
     });
     form.reset();
     setIsDialogOpen(false);
@@ -109,7 +131,7 @@ export default function FeedbackPage() {
           <div className="ml-auto">
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button>Request Feedback</Button>
+                <Button>Add Feedback</Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[480px]">
                 <Form {...form}>
@@ -118,21 +140,23 @@ export default function FeedbackPage() {
                     className="space-y-4"
                   >
                     <DialogHeader>
-                      <DialogTitle>Request Feedback</DialogTitle>
+                      <DialogTitle>Add New Feedback</DialogTitle>
                       <DialogDescription>
-                        Send a request to a team member or external user to get
-                        their feedback.
+                        Fill in the details for the new feedback.
                       </DialogDescription>
                     </DialogHeader>
 
                     <FormField
                       control={form.control}
-                      name="email"
+                      name="from"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Email</FormLabel>
+                          <FormLabel>From</FormLabel>
                           <FormControl>
-                            <Input placeholder="name@example.com" {...field} />
+                            <Input
+                              placeholder="name@example.com or Team Member"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -140,16 +164,43 @@ export default function FeedbackPage() {
                     />
                     <FormField
                       control={form.control}
-                      name="message"
+                      name="content"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Message</FormLabel>
+                          <FormLabel>Feedback</FormLabel>
                           <FormControl>
                             <Textarea
-                              placeholder="e.g., 'Could you please provide feedback on our new landing page design?'"
+                              placeholder="e.g., 'The new landing page design is great!'"
                               {...field}
                             />
                           </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="metric"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Rating</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a rating" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="1">1 Star</SelectItem>
+                              <SelectItem value="2">2 Stars</SelectItem>
+                              <SelectItem value="3">3 Stars</SelectItem>
+                              <SelectItem value="4">4 Stars</SelectItem>
+                              <SelectItem value="5">5 Stars</SelectItem>
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -190,7 +241,7 @@ export default function FeedbackPage() {
                     />
 
                     <DialogFooter>
-                      <Button type="submit">Send Request</Button>
+                      <Button type="submit">Add Feedback</Button>
                     </DialogFooter>
                   </form>
                 </Form>
@@ -200,7 +251,7 @@ export default function FeedbackPage() {
         </div>
 
         <TabsContent value="all" className="grid md:grid-cols-2 gap-4 mt-4">
-          {feedbackData.map((feedback) => (
+          {feedbacks.map((feedback) => (
             <Card key={feedback.id}>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">

@@ -34,7 +34,7 @@ export default function StartupDetailPage({ params }: { params: { id: string } }
     }
 
     return (
-        <div className="bg-secondary/30">
+        <div className="bg-secondary/30 min-h-screen">
             <header className="px-4 lg:px-6 h-16 flex items-center border-b bg-background">
                 <Link href="/" className="flex items-center justify-center" prefetch={false}>
                 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-primary">
@@ -56,8 +56,8 @@ export default function StartupDetailPage({ params }: { params: { id: string } }
             </header>
 
             <main className="container mx-auto py-12 px-4 md:px-6">
-                <div className="flex flex-col md:flex-row gap-8 items-start">
-                    <div className="flex-1 space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+                    <div className="lg:col-span-2 space-y-6">
                         <div className="space-y-2">
                              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline bg-clip-text text-transparent bg-gradient-to-r from-primary to-teal-400">
                                 {startup.name}
@@ -80,7 +80,7 @@ export default function StartupDetailPage({ params }: { params: { id: string } }
                             </DetailCard>
                          </div>
                     </div>
-                    <div className="w-full md:w-80 lg:w-96 space-y-6">
+                    <div className="space-y-6">
                          <Card>
                             <CardHeader>
                                 <CardTitle>Startup Info</CardTitle>

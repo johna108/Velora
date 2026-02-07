@@ -42,27 +42,25 @@ export default function PitchGeneratorPage() {
                 <p>The global market for startup and small business software is rapidly expanding. We are initially targeting the thousands of new startups emerging from tech incubators and universities, with a focus on the {industry} sector. Our specific niche is founders who need a structured approach to execution, a significant and underserved segment of the market.</p>
             </PitchSection>
              <PitchSection title="4. Product">
-                <p>Our core product features include:
-                    <ul>
-                        <li><strong>Task & Milestone Tracking:</strong> A visual system to manage tasks and track progress against key milestones.</li>
-                        <li><strong>Feedback & Validation:</strong> Tools to collect and analyze internal and external feedback to iterate on ideas.</li>
-                        <li><strong>Analytics Dashboard:</strong> Clear, meaningful data on progress, trends, and team performance.</li>
-                        <li><strong>AI-Powered Insights:</strong> Smart suggestions for tasks and growth strategies based on startup data.</li>
-                    </ul>
-                </p>
+                <p>Our core product features include:</p>
+                <ul>
+                    <li><strong>Task & Milestone Tracking:</strong> A visual system to manage tasks and track progress against key milestones.</li>
+                    <li><strong>Feedback & Validation:</strong> Tools to collect and analyze internal and external feedback to iterate on ideas.</li>
+                    <li><strong>Analytics Dashboard:</strong> Clear, meaningful data on progress, trends, and team performance.</li>
+                    <li><strong>AI-Powered Insights:</strong> Smart suggestions for tasks and growth strategies based on startup data.</li>
+                </ul>
             </PitchSection>
              <PitchSection title="5. Business Model">
                 <p>Our business model is a {businessModel}. We offer a free tier for individual founders and small teams, with premium subscription plans that unlock advanced features like unlimited AI insights, team management roles, and in-depth analytics. This freemium approach allows us to capture a wide user base and upsell as startups grow.</p>
             </PitchSection>
             <PitchSection title="6. Roadmap">
-                <p>Our 12-month roadmap includes:
-                    <ul>
-                        <li><strong>Q1:</strong> Launch public beta and onboard first 100 startups.</li>
-                        <li><strong>Q2:</strong> Integrate with popular developer tools like GitHub and Slack.</li>
-                        <li><strong>Q3:</strong> Introduce advanced collaboration and resource planning features.</li>
-                        <li><strong>Q4:</strong> Develop a mobile application and expand our AI capabilities.</li>
-                    </ul>
-                </p>
+                <p>Our 12-month roadmap includes:</p>
+                <ul>
+                    <li><strong>Q1:</strong> Launch public beta and onboard first 100 startups.</li>
+                    <li><strong>Q2:</strong> Integrate with popular developer tools like GitHub and Slack.</li>
+                    <li><strong>Q3:</strong> Introduce advanced collaboration and resource planning features.</li>
+                    <li><strong>Q4:</strong> Develop a mobile application and expand our AI capabilities.</li>
+                </ul>
             </PitchSection>
         </CardContent>
         <CardFooter className="flex gap-2">

@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,9 +30,34 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { startupProfileData } from "@/lib/data";
+import { startupProfileData, type StartupProfile } from "@/lib/data";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ProfilePage() {
+  const [profileData, setProfileData] =
+    useState<StartupProfile>(startupProfileData);
+  const { toast } = useToast();
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { id, value } = e.target;
+    setProfileData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleSelectChange = (value: StartupProfile["stage"]) => {
+    setProfileData((prev) => ({ ...prev, stage: value }));
+  };
+
+  const handleSaveChanges = () => {
+    // In a real application, you would persist these changes to your backend.
+    console.log("Saving Profile:", profileData);
+    toast({
+      title: "Success!",
+      description: "Your startup profile has been saved.",
+    });
+  };
+
   return (
     <div className="grid gap-6">
       <Card>
@@ -46,7 +74,8 @@ export default function ProfilePage() {
                 <Label htmlFor="name">Startup Name</Label>
                 <Input
                   id="name"
-                  defaultValue={startupProfileData.name}
+                  value={profileData.name}
+                  onChange={handleInputChange}
                   placeholder="e.g., InnovateAI"
                 />
               </div>
@@ -54,32 +83,38 @@ export default function ProfilePage() {
                 <Label htmlFor="industry">Industry</Label>
                 <Input
                   id="industry"
-                  defaultValue={startupProfileData.industry}
+                  value={profileData.industry}
+                  onChange={handleInputChange}
                   placeholder="e.g., Artificial Intelligence"
                 />
               </div>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="business-model">Business Model</Label>
+              <Label htmlFor="businessModel">Business Model</Label>
               <Input
-                id="business-model"
-                defaultValue={startupProfileData.businessModel}
+                id="businessModel"
+                value={profileData.businessModel}
+                onChange={handleInputChange}
                 placeholder="e.g., B2B Subscription"
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="target-market">Target Market</Label>
+              <Label htmlFor="targetMarket">Target Market</Label>
               <Textarea
-                id="target-market"
-                defaultValue={startupProfileData.targetMarket}
+                id="targetMarket"
+                value={profileData.targetMarket}
+                onChange={handleInputChange}
                 placeholder="Describe your target customers"
                 className="min-h-24"
               />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="stage">Current Stage</Label>
-              <Select defaultValue={startupProfileData.stage}>
-                <SelectTrigger>
+              <Select
+                value={profileData.stage}
+                onValueChange={handleSelectChange}
+              >
+                <SelectTrigger id="stage">
                   <SelectValue placeholder="Select stage" />
                 </SelectTrigger>
                 <SelectContent>
@@ -93,35 +128,44 @@ export default function ProfilePage() {
           </form>
         </CardContent>
         <CardFooter className="border-t px-6 py-4">
-          <Button>Save Changes</Button>
+          <Button onClick={handleSaveChanges}>Save Changes</Button>
         </CardFooter>
       </Card>
 
       <Card>
         <CardHeader>
           <CardTitle>Team Members</CardTitle>
-          <CardDescription>
-            Manage your team and their roles.
-          </CardDescription>
+          <CardDescription>Manage your team and their roles.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-6">
-          {startupProfileData.team.map((member) => (
-            <div key={member.name} className="flex items-center justify-between space-x-4">
+          {profileData.team.map((member) => (
+            <div
+              key={member.name}
+              className="flex items-center justify-between space-x-4"
+            >
               <div className="flex items-center space-x-4">
                 <Avatar>
-                  {member.avatar && 
-                    <AvatarImage src={member.avatar.imageUrl} alt={member.name} data-ai-hint={member.avatar.imageHint} />
-                  }
+                  {member.avatar && (
+                    <AvatarImage
+                      src={member.avatar.imageUrl}
+                      alt={member.name}
+                      data-ai-hint={member.avatar.imageHint}
+                    />
+                  )}
                   <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="text-sm font-medium leading-none">
                     {member.name}
                   </p>
-                  <p className="text-sm text-muted-foreground">{member.role}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {member.role}
+                  </p>
                 </div>
               </div>
-              <Button variant="outline" size="sm">Edit</Button>
+              <Button variant="outline" size="sm">
+                Edit
+              </Button>
             </div>
           ))}
         </CardContent>
@@ -134,7 +178,8 @@ export default function ProfilePage() {
               <DialogHeader>
                 <DialogTitle>Invite Member</DialogTitle>
                 <DialogDescription>
-                  Enter the email and role for the new team member. They will receive an invitation to join.
+                  Enter the email and role for the new team member. They will
+                  receive an invitation to join.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
@@ -142,7 +187,12 @@ export default function ProfilePage() {
                   <Label htmlFor="email" className="text-right">
                     Email
                   </Label>
-                  <Input id="email" type="email" placeholder="member@example.com" className="col-span-3" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="member@example.com"
+                    className="col-span-3"
+                  />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="role" className="text-right">

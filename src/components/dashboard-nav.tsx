@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   FileText,
+  Globe,
   LayoutDashboard,
   ListChecks,
   MessageSquare,
@@ -19,6 +20,7 @@ import {
 } from "./ui/tooltip";
 
 const navItems = [
+  { href: "/", label: "Discover", icon: Globe },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/profile", label: "Profile", icon: User },
   { href: "/dashboard/tasks", label: "Tasks", icon: ListChecks },
@@ -39,14 +41,19 @@ export function DashboardNav({ isMobile = false }: { isMobile?: boolean }) {
   const pathname = usePathname();
 
   const content = navItems.map((item) => {
-    const isActive = pathname === item.href;
+    const isActive =
+      item.href === "/dashboard"
+        ? pathname === item.href
+        : pathname.startsWith(item.href) && item.href !== "/";
+    const isDiscover = item.href === "/" && pathname === "/";
+
     return (
       <Link
         key={item.label}
         href={item.href}
         className={cn(
           "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-          isActive && "bg-secondary text-primary",
+          (isActive || isDiscover) && "bg-secondary text-primary",
           isMobile && "text-lg"
         )}
       >

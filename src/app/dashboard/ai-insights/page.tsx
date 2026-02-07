@@ -116,7 +116,7 @@ export default function AiInsightsPage() {
             <ul className="space-y-3">
               {generatedTasks.map((task, index) => (
                 <li key={index} className="flex items-start gap-3">
-                  <Check className="h-5 w-5 mt-1 text-green-500" />
+                  <Check className="h-5 w-5 mt-1 text-primary" />
                   <span>{task}</span>
                 </li>
               ))}

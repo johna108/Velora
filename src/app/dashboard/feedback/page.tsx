@@ -11,7 +11,7 @@ function StarRating({ rating }: { rating: number }) {
         <Star
           key={i}
           className={`h-5 w-5 ${
-            i < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+            i < rating ? "text-primary fill-primary" : "text-muted-foreground opacity-30"
           }`}
         />
       ))}
@@ -46,7 +46,7 @@ export default function FeedbackPage() {
                     <CardHeader>
                         <CardTitle className="flex items-center justify-between">
                             <span>From: {feedback.from}</span>
-                            <span className={`text-xs font-semibold px-2 py-1 rounded-full ${feedback.type === 'Internal' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>{feedback.type}</span>
+                            <span className={`text-xs font-semibold px-2 py-1 rounded-full ${feedback.type === 'Internal' ? 'bg-secondary text-secondary-foreground' : 'bg-accent text-accent-foreground'}`}>{feedback.type}</span>
                         </CardTitle>
                         <CardDescription>
                             <StarRating rating={feedback.metric} />
@@ -64,7 +64,7 @@ export default function FeedbackPage() {
                     <CardHeader>
                         <CardTitle className="flex items-center justify-between">
                             <span>From: {feedback.from}</span>
-                            <span className="text-xs font-semibold px-2 py-1 rounded-full bg-blue-100 text-blue-800">{feedback.type}</span>
+                            <span className="text-xs font-semibold px-2 py-1 rounded-full bg-secondary text-secondary-foreground">{feedback.type}</span>
                         </CardTitle>
                         <CardDescription>
                             <StarRating rating={feedback.metric} />
@@ -82,7 +82,7 @@ export default function FeedbackPage() {
                     <CardHeader>
                         <CardTitle className="flex items-center justify-between">
                             <span>From: {feedback.from}</span>
-                            <span className="text-xs font-semibold px-2 py-1 rounded-full bg-purple-100 text-purple-800">{feedback.type}</span>
+                            <span className="text-xs font-semibold px-2 py-1 rounded-full bg-accent text-accent-foreground">{feedback.type}</span>
                         </CardTitle>
                         <CardDescription>
                             <StarRating rating={feedback.metric} />

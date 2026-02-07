@@ -55,7 +55,7 @@ export default function Home() {
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
                   <span className="text-sm font-semibold tracking-wide text-muted-foreground font-headline">Udyamitsav ‘26</span>
-                  <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
+                  <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline bg-clip-text text-transparent bg-gradient-to-r from-primary to-teal-400">
                     Rise Beyond Boundaries
                   </h1>
                   <p className="max-w-[600px] text-muted-foreground md:text-xl">

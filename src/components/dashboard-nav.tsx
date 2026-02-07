@@ -60,7 +60,7 @@ export function DashboardNav({ isMobile = false }: { isMobile?: boolean }) {
     return (
       <>
         <Link
-          href="/dashboard"
+          href="/"
           className="group flex items-center gap-2 text-lg font-semibold"
         >
           <svg

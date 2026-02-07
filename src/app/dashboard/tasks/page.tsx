@@ -1,13 +1,13 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
-import { tasksData, teamMembers } from "@/lib/data";
+import { tasksData, teamMembers, type Task } from "@/lib/data";
 import { PlusCircle, MoreHorizontal } from "lucide-react";
 import {
   DropdownMenu,
@@ -25,14 +25,19 @@ import {
     DialogTitle,
     DialogTrigger,
   } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useToast } from "@/hooks/use-toast";
 
 type TaskColumnProps = {
   title: "Todo" | "In Progress" | "Done";
-  tasks: typeof tasksData;
+  tasks: Task[];
 };
 
 function TaskColumn({ title, tasks }: TaskColumnProps) {
@@ -78,12 +83,51 @@ function TaskColumn({ title, tasks }: TaskColumnProps) {
   );
 }
 
+const taskFormSchema = z.object({
+    title: z.string().min(1, "Title is required."),
+    description: z.string().optional(),
+    assignee: z.string().optional(),
+});
+
+
 export default function TasksPage() {
-  const todoTasks = tasksData.filter((task) => task.status === "Todo");
-  const inProgressTasks = tasksData.filter(
+  const [tasks, setTasks] = useState<Task[]>(tasksData);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { toast } = useToast();
+
+  const form = useForm<z.infer<typeof taskFormSchema>>({
+    resolver: zodResolver(taskFormSchema),
+    defaultValues: {
+        title: "",
+        description: "",
+        assignee: "",
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof taskFormSchema>) {
+    const assignee = teamMembers.find(member => member.name === values.assignee);
+    const newTask: Task = {
+        id: `task-${Date.now()}`,
+        title: values.title,
+        description: values.description || "",
+        status: "Todo",
+        assignee: assignee,
+    };
+
+    setTasks(prevTasks => [...prevTasks, newTask]);
+    toast({
+        title: "Task created!",
+        description: `"${values.title}" has been added to your board.`,
+    });
+    form.reset();
+    setIsDialogOpen(false);
+  }
+
+  const todoTasks = tasks.filter((task) => task.status === "Todo");
+  const inProgressTasks = tasks.filter(
     (task) => task.status === "In Progress"
   );
-  const doneTasks = tasksData.filter((task) => task.status === "Done");
+  const doneTasks = tasks.filter((task) => task.status === "Done");
 
   return (
     <div className="flex flex-col gap-8">
@@ -92,51 +136,74 @@ export default function TasksPage() {
                 <h1 className="text-3xl font-bold font-headline">Task Board</h1>
                 <p className="text-muted-foreground">Drag and drop tasks to change their status.</p>
             </div>
-            <Dialog>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
                     <Button>
                         <PlusCircle className="mr-2 h-4 w-4" /> Add Task
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                    <DialogTitle>Add New Task</DialogTitle>
-                    <DialogDescription>
-                        Fill in the details for the new task. Click save when you're done.
-                    </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="title" className="text-right">
-                        Title
-                        </Label>
-                        <Input id="title" placeholder="e.g. Design landing page" className="col-span-3" />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="description" className="text-right">
-                        Description
-                        </Label>
-                        <Textarea id="description" placeholder="Add more details about the task" className="col-span-3" />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="assignee" className="text-right">
-                        Assignee
-                        </Label>
-                         <Select>
-                            <SelectTrigger className="col-span-3">
-                                <SelectValue placeholder="Select a team member" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {teamMembers.map(member => (
-                                    <SelectItem key={member.name} value={member.name}>{member.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    </div>
-                    <DialogFooter>
-                    <Button type="submit">Save Task</Button>
-                    </DialogFooter>
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                            <DialogHeader>
+                            <DialogTitle>Add New Task</DialogTitle>
+                            <DialogDescription>
+                                Fill in the details for the new task. Click save when you're done.
+                            </DialogDescription>
+                            </DialogHeader>
+                            
+                            <FormField
+                                control={form.control}
+                                name="title"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Title</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="e.g. Design landing page" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                             <FormField
+                                control={form.control}
+                                name="description"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Description</FormLabel>
+                                        <FormControl>
+                                            <Textarea placeholder="Add more details about the task" {...field} />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                             <FormField
+                                control={form.control}
+                                name="assignee"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Assignee</FormLabel>
+                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a team member" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {teamMembers.map(member => (
+                                                    <SelectItem key={member.name} value={member.name}>{member.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </FormItem>
+                                )}
+                            />
+                            
+                            <DialogFooter>
+                            <Button type="submit">Save Task</Button>
+                            </DialogFooter>
+                        </form>
+                    </Form>
                 </DialogContent>
             </Dialog>
 

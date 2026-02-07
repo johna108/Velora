@@ -8,6 +8,7 @@ import { useState, useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { generatePitchAction } from "./actions";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import PptxGenJS from "pptxgenjs";
 
 type PitchSectionProps = {
     title: string;
@@ -52,6 +53,52 @@ export default function PitchGeneratorPage() {
             }
         });
     }
+
+    const handleDownloadPPT = () => {
+        if (!generatedSlides) {
+            toast({
+                variant: "destructive",
+                title: "No slides to download",
+                description: "Please generate a pitch first.",
+            });
+            return;
+        }
+
+        const pptx = new PptxGenJS();
+        
+        generatedSlides.forEach(slide => {
+            const pptxSlide = pptx.addSlide();
+            
+            const titleColor = "363636";
+            const contentColor = "6A6A6A";
+
+            pptxSlide.addText(slide.title, { 
+                x: 0.5, 
+                y: 0.25, 
+                w: '90%', 
+                h: 1, 
+                fontSize: 36, 
+                bold: true, 
+                align: 'center',
+                color: titleColor
+            });
+
+            const content = slide.content.split('\n').map(line => line.replace(/^[*-•]\s*/, '').trim()).filter(line => line).join('\n');
+
+            pptxSlide.addText(content, { 
+                x: 1, 
+                y: 1.8, 
+                w: '80%', 
+                h: '70%', 
+                fontSize: 18,
+                bullet: true,
+                color: contentColor,
+                lineSpacing: 36,
+            });
+        });
+
+        pptx.writeFile({ fileName: `${startupProfileData.name}-Pitch-Deck.pptx` });
+    };
 
   return (
     <div className="grid gap-6">
@@ -138,7 +185,7 @@ export default function PitchGeneratorPage() {
                     "Generate Pitch"
                 )}
             </Button>
-            <Button variant="outline" disabled>Download as PPT</Button>
+            <Button variant="outline" onClick={handleDownloadPPT} disabled={!generatedSlides || isPending}>Download as PPT</Button>
         </CardFooter>
       </Card>
     </div>

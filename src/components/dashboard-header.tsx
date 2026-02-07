@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, User } from "lucide-react";
+import { Menu, User, CreditCard } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { DashboardNav } from "./dashboard-nav";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -77,9 +77,19 @@ export function DashboardHeader() {
         </BreadcrumbList>
       </Breadcrumb>
       <div className="relative ml-auto flex-1 md:grow-0" />
+      <Button asChild variant="outline" size="sm">
+        <Link href="/dashboard/pricing">
+          <CreditCard className="mr-2" />
+          Pricing
+        </Link>
+      </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" className="overflow-hidden rounded-full">
+          <Button
+            variant="outline"
+            size="icon"
+            className="overflow-hidden rounded-full"
+          >
             {avatar ? (
               <Image
                 src={avatar.imageUrl}
@@ -90,7 +100,7 @@ export function DashboardHeader() {
                 data-ai-hint={avatar.imageHint}
               />
             ) : (
-                <User />
+              <User />
             )}
           </Button>
         </DropdownMenuTrigger>
@@ -99,9 +109,6 @@ export function DashboardHeader() {
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <Link href="/dashboard/profile">Profile</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/dashboard/pricing">Pricing</Link>
           </DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuSeparator />

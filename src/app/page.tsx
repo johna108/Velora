@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { publicStartups } from "@/lib/data";
@@ -27,19 +27,40 @@ export default function Home() {
         </nav>
       </header>
       <main className="flex-1">
-        <section className="w-full py-12 md:py-16 lg:py-20">
+        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-40 bg-secondary/30">
           <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <div className="grid gap-6 items-center">
+              <div className="flex flex-col justify-center space-y-4 text-center">
+                <div className="space-y-2">
+                  <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none bg-clip-text text-transparent bg-gradient-to-r from-primary to-teal-400 font-headline">
+                    Discover Tomorrow's Innovators
+                  </h1>
+                  <p className="max-w-[600px] text-muted-foreground md:text-xl mx-auto">
+                    Browse a curated directory of groundbreaking startups. Connect with founders, explore investment opportunities, and be part of the next big thing.
+                  </p>
+                </div>
+                <div className="w-full max-w-sm mx-auto pt-4">
+                    <Button asChild size="lg">
+                      <Link href="/login">Join as a Founder</Link>
+                    </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section id="discover" className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Discover Innovative Startups</h1>
-                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Browse through a curated list of startups. Find the next big thing to invest in or collaborate with.
+                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">Featured Startups</h2>
+                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                    Here are some of the most promising ventures on our platform.
                 </p>
               </div>
             </div>
-            <div className="mx-auto grid gap-6 pt-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="mx-auto grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {publicStartups.map((startup) => (
-                <Card key={startup.id} className="flex flex-col">
+                <Card key={startup.id} className="flex flex-col hover:shadow-lg transition-shadow duration-300">
                   <CardHeader>
                     <CardTitle>{startup.name}</CardTitle>
                     <CardDescription>{startup.industry}</CardDescription>
@@ -47,13 +68,13 @@ export default function Home() {
                   <CardContent className="flex-grow">
                     <p className="text-sm text-muted-foreground">{startup.description}</p>
                   </CardContent>
-                  <div className="p-6 pt-0">
+                  <CardFooter>
                     <Button asChild className="w-full">
                       <Link href={`/startup/${startup.id}`}>
                         View Details <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
-                  </div>
+                  </CardFooter>
                 </Card>
               ))}
             </div>

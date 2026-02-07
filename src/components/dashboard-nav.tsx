@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  CreditCard,
   FileText,
   LayoutDashboard,
   ListChecks,
@@ -32,6 +33,11 @@ const navItems = [
     href: "/dashboard/pitch-generator",
     label: "Pitch Generator",
     icon: FileText,
+  },
+  {
+    href: "/dashboard/pricing",
+    label: "Pricing",
+    icon: CreditCard,
   },
 ];
 

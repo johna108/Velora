@@ -1,10 +1,10 @@
-import { publicStartups, type StartupProfile } from "@/lib/data";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Mail, Users, Briefcase, Target, Milestone, Lightbulb } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
+import { getStartupWithTeam } from "@/lib/db";
 
 type DetailCardProps = {
     icon: React.ReactNode;
@@ -26,15 +26,18 @@ function DetailCard({ icon, title, children }: DetailCardProps) {
     )
 }
 
-export default function StartupDetailPage({ params }: { params: { id: string } }) {
-    const startup = publicStartups.find(s => s.id === params.id);
+export default async function StartupDetailPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+    const result = await getStartupWithTeam(id);
 
-    if (!startup) {
+    if (!result || !result.startup) {
         notFound();
     }
 
+    const { startup, team } = result;
+
     return (
-        <div className="bg-secondary/30 min-h-screen">
+        <div className="bg-background min-h-screen">
             <header className="px-4 lg:px-6 h-16 flex items-center border-b bg-background">
                 <Link href="/" className="flex items-center justify-center" prefetch={false}>
                 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-primary">
@@ -42,9 +45,9 @@ export default function StartupDetailPage({ params }: { params: { id: string } }
                     <path d="M16 24H16.0133" stroke="hsl(var(--primary))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     <path d="M12 8H20" stroke="hsl(var(--primary))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <span className="sr-only">StartupOps</span>
+                <span className="sr-only">Velora</span>
                 </Link>
-                <h1 className="text-2xl font-bold font-headline ml-2">StartupOps</h1>
+                <h1 className="text-2xl font-bold font-headline ml-2">Velora</h1>
                  <nav className="ml-auto flex gap-4 sm:gap-6">
                     <Button variant="outline" asChild>
                         <Link href="/">Back to Discover</Link>
@@ -73,10 +76,10 @@ export default function StartupDetailPage({ params }: { params: { id: string } }
                                 {startup.solution}
                             </DetailCard>
                             <DetailCard icon={<Briefcase className="text-primary"/>} title="Business Model">
-                                {startup.businessModel}
+                                {startup.business_model}
                             </DetailCard>
                             <DetailCard icon={<Target className="text-primary"/>} title="Target Market">
-                                {startup.targetMarket}
+                                {startup.target_market}
                             </DetailCard>
                          </div>
                     </div>
@@ -88,10 +91,8 @@ export default function StartupDetailPage({ params }: { params: { id: string } }
                              <CardContent className="space-y-4 text-sm">
                                 <p><strong>Industry:</strong> {startup.industry}</p>
                                 <p><strong>Stage:</strong> {startup.stage}</p>
-                                 <Button className="w-full" asChild>
-                                    <a href={`mailto:${startup.founderEmail}`}>
-                                        <Mail className="mr-2 h-4 w-4" /> Contact Founder
-                                    </a>
+                                 <Button className="w-full" disabled>
+                                      <Mail className="mr-2 h-4 w-4" /> Contact Founder (Coming Soon)
                                 </Button>
                              </CardContent>
                         </Card>
@@ -101,11 +102,11 @@ export default function StartupDetailPage({ params }: { params: { id: string } }
                                 <CardTitle className="flex items-center gap-2"><Users /> The Team</CardTitle>
                             </CardHeader>
                             <CardContent className="grid gap-4">
-                                {startup.team.map((member) => (
+                                {team.map((member) => (
                                 <div key={member.name} className="flex items-center space-x-4">
                                     <Avatar>
-                                    {member.avatar && (
-                                        <AvatarImage src={member.avatar.imageUrl} alt={member.name} data-ai-hint={member.avatar.imageHint} />
+                                    {member.avatar_url && (
+                                        <AvatarImage src={member.avatar_url} alt={member.name} />
                                     )}
                                     <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
                                     </Avatar>

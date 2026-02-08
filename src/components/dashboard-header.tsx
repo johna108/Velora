@@ -19,17 +19,30 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, User, CreditCard, Compass } from "lucide-react";
+import { Menu, CreditCard, Compass, LogOut } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { DashboardNav } from "./dashboard-nav";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import Image from "next/image";
 import React from "react";
+import { signOut } from "@/app/login/actions";
+import { User as UserIcon } from "lucide-react";
 
-export function DashboardHeader() {
+interface DashboardHeaderProps {
+  user?: {
+    email?: string | null;
+    user_metadata?: {
+      avatar_url?: string;
+    };
+  } | null;
+}
+
+export function DashboardHeader({ user }: DashboardHeaderProps) {
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
-  const avatar = PlaceHolderImages.find((p) => p.id === "avatar-1");
+  
+  // Use user avatar or generate one based on email
+  const avatarUrl = user?.user_metadata?.avatar_url || 
+    (user?.email ? `https://ui-avatars.com/api/?name=${encodeURIComponent(user.email)}&background=random` : null);
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
@@ -96,17 +109,16 @@ export function DashboardHeader() {
             size="icon"
             className="overflow-hidden rounded-full"
           >
-            {avatar ? (
+            {avatarUrl ? (
               <Image
-                src={avatar.imageUrl}
+                src={avatarUrl}
                 width={36}
                 height={36}
                 alt="Avatar"
                 className="overflow-hidden rounded-full"
-                data-ai-hint={avatar.imageHint}
               />
             ) : (
-              <User />
+              <UserIcon className="h-5 w-5" />
             )}
           </Button>
         </DropdownMenuTrigger>
@@ -118,8 +130,14 @@ export function DashboardHeader() {
           </DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link href="/login">Logout</Link>
+          <DropdownMenuItem
+            onClick={async () => {
+              await signOut();
+            }}
+            className="cursor-pointer"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

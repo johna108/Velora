@@ -9,6 +9,8 @@ import {
   MessageSquare,
   Sparkles,
   User,
+  ArrowULeft,
+  ChevronLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -97,7 +99,7 @@ export function DashboardNav({ isMobile = false }: { isMobile?: boolean }) {
               strokeLinejoin="round"
             />
           </svg>
-          <span className="font-headline">StartupOps</span>
+          <span className="font-headline">Velora</span>
         </Link>
         {content}
       </>
@@ -108,6 +110,23 @@ export function DashboardNav({ isMobile = false }: { isMobile?: boolean }) {
     <TooltipProvider>
       <div className="flex-1">
         <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="/organizations"
+                  className={cn(
+                    "group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground text-muted-foreground mb-4"
+                  )}
+                >
+                  <ChevronLeft className="mr-2 h-4 w-4" />
+                  <span>All Projects</span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right">Back to Organizations</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
           {content}
         </nav>
       </div>

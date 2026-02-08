@@ -1,16 +1,16 @@
 "use server";
 
 import { generateInvestorPitch } from "@/ai/ai-generate-investor-pitch";
-import { startupProfileData } from "@/lib/data";
+import type { Startup } from "@/lib/db";
 
-export async function generatePitchAction() {
+export async function generatePitchAction(startup: Startup) {
   try {
     const result = await generateInvestorPitch({
-      companyName: startupProfileData.name,
-      problem: startupProfileData.problem,
-      solution: startupProfileData.solution,
-      roadmap: startupProfileData.roadmap,
-      traction: startupProfileData.traction,
+      companyName: startup.name,
+      problem: startup.problem || "N/A",
+      solution: startup.solution || "N/A",
+      roadmap: startup.roadmap || "N/A",
+      traction: startup.traction || "N/A",
     });
 
     if (!result || !result.slides) {

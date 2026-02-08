@@ -15,7 +15,7 @@ import { Check } from "lucide-react";
 const tiers = [
   {
     name: "Free",
-    price: "$0",
+    price: "₹0",
     description: "For individual founders just getting started.",
     features: [
       "Up to 10 tasks",
@@ -28,7 +28,7 @@ const tiers = [
   },
   {
     name: "Pro",
-    price: "$20",
+    price: "₹200",
     description: "For small teams looking to accelerate.",
     features: [
       "Unlimited tasks",
@@ -74,7 +74,7 @@ export default function PricingPage() {
               <CardTitle>{tier.name}</CardTitle>
               <div className="text-4xl font-bold pt-4">
                 {tier.price}
-                {tier.price !== "Contact Us" && tier.price !== "$0" && <span className="text-sm font-normal text-muted-foreground">/ month</span>}
+                {tier.price !== "Contact Us" && tier.price !== "₹0" && <span className="text-sm font-normal text-muted-foreground">/ month</span>}
               </div>
               <CardDescription className="pt-2">{tier.description}</CardDescription>
             </CardHeader>

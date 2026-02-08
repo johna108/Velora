@@ -1,193 +1,21 @@
-"use client";
+import { redirect } from "next/navigation";
+import { getUserWithStartup } from "@/lib/db";
+import PitchGeneratorClient from "./client";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { startupProfileData } from "@/lib/data";
-import { FileText, Loader2 } from "lucide-react";
-import { useState, useTransition } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { generatePitchAction } from "./actions";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import PptxGenJS from "pptxgenjs";
+export default async function PitchGeneratorPage() {
+  const { user, startup } = await getUserWithStartup();
 
-type PitchSectionProps = {
-    title: string;
-    children: React.ReactNode;
-};
+  if (!user) {
+    redirect("/login");
+  }
 
-function PitchSection({ title, children }: PitchSectionProps) {
+  if (!startup) {
     return (
-        <div>
-            <h3 className="text-xl font-semibold font-headline text-primary mb-2">{title}</h3>
-            <div className="prose prose-sm max-w-none text-muted-foreground">{children}</div>
-        </div>
-    )
-}
+      <div className="flex items-center justify-center h-96">
+        <p className="text-muted-foreground">No startup found. Please create one on the Dashboard.</p>
+      </div>
+    );
+  }
 
-type Slide = {
-    title: string;
-    content: string;
-};
-
-export default function PitchGeneratorPage() {
-    const {name, industry, targetMarket, businessModel} = startupProfileData;
-    const [isPending, startTransition] = useTransition();
-    const [generatedSlides, setGeneratedSlides] = useState<Slide[] | null>(null);
-    const { toast } = useToast();
-
-    const handleGeneratePitch = () => {
-        startTransition(async () => {
-            const result = await generatePitchAction();
-            if (result.error) {
-                toast({
-                    variant: "destructive",
-                    title: "Error",
-                    description: result.error,
-                });
-            } else if (result.slides) {
-                setGeneratedSlides(result.slides);
-                toast({
-                    title: "Success!",
-                    description: "AI has generated your investor pitch.",
-                });
-            }
-        });
-    }
-
-    const handleDownloadPPT = () => {
-        if (!generatedSlides) {
-            toast({
-                variant: "destructive",
-                title: "No slides to download",
-                description: "Please generate a pitch first.",
-            });
-            return;
-        }
-
-        const pptx = new PptxGenJS();
-        
-        generatedSlides.forEach(slide => {
-            const pptxSlide = pptx.addSlide();
-            
-            const titleColor = "363636";
-            const contentColor = "6A6A6A";
-
-            pptxSlide.addText(slide.title, { 
-                x: 0.5, 
-                y: 0.25, 
-                w: '90%', 
-                h: 1, 
-                fontSize: 36, 
-                bold: true, 
-                align: 'center',
-                color: titleColor
-            });
-
-            const content = slide.content.split('\n').map(line => line.replace(/^[*-•]\s*/, '').trim()).filter(line => line).join('\n');
-
-            pptxSlide.addText(content, { 
-                x: 1, 
-                y: 1.8, 
-                w: '80%', 
-                h: '70%', 
-                fontSize: 18,
-                bullet: true,
-                color: contentColor,
-                lineSpacing: 36,
-            });
-        });
-
-        pptx.writeFile({ fileName: `${startupProfileData.name}-Pitch-Deck.pptx` });
-    };
-
-  return (
-    <div className="grid gap-6">
-       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="text-primary" />
-            AI Investor Pitch Generator
-          </CardTitle>
-          <CardDescription>
-            Use your startup data to generate a compelling pitch deck and preview the slides.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="min-h-[400px]">
-            {isPending ? (
-                <div className="flex justify-center items-center h-full min-h-[300px]">
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                    <p className="ml-4 text-muted-foreground">Generating your pitch...</p>
-                </div>
-            ) : generatedSlides ? (
-                <Carousel className="w-full max-w-xl mx-auto">
-                    <CarouselContent>
-                        {generatedSlides.map((slide, index) => (
-                        <CarouselItem key={index}>
-                            <div className="p-1">
-                            <Card className="flex flex-col justify-center p-6 h-[350px]">
-                                <CardHeader>
-                                    <CardTitle className="text-center">{slide.title}</CardTitle>
-                                </CardHeader>
-                                <CardContent className="text-center text-sm whitespace-pre-wrap">
-                                    {slide.content}
-                                </CardContent>
-                            </Card>
-                            </div>
-                        </CarouselItem>
-                        ))}
-                    </CarouselContent>
-                    <CarouselPrevious />
-                    <CarouselNext />
-                </Carousel>
-            ) : (
-                <div className="space-y-8">
-                    <PitchSection title="1. Problem">
-                        <p>Early-stage startups often struggle not because of a lack of ideas, but due to poor execution, unstructured planning, and the absence of data-driven decision-making. Founders rely on a fragmented set of tools, leading to inefficiency and a lack of focus on what truly matters for growth.</p>
-                    </PitchSection>
-                    <PitchSection title="2. Solution">
-                        <p>{name} is a unified digital platform that acts as an operational workspace for early-stage founders. We help them manage execution, validate ideas, collaborate with their teams, and gain actionable insights to scale efficiently. Our solution is intuitive, scalable, and founder-centric, designed to mirror real-world startup workflows.</p>
-                    </PitchSection>
-                    <PitchSection title="3. Market Size">
-                        <p>The global market for startup and small business software is rapidly expanding. We are initially targeting the thousands of new startups emerging from tech incubators and universities, with a focus on the {industry} sector. Our specific niche is founders who need a structured approach to execution, a significant and underserved segment of the market.</p>
-                    </PitchSection>
-                    <PitchSection title="4. Product">
-                        <p>Our core product features include:</p>
-                        <ul>
-                            <li><strong>Task & Milestone Tracking:</strong> A visual system to manage tasks and track progress against key milestones.</li>
-                            <li><strong>Feedback & Validation:</strong> Tools to collect and analyze internal and external feedback to iterate on ideas.</li>
-                            <li><strong>Analytics Dashboard:</strong> Clear, meaningful data on progress, trends, and team performance.</li>
-                            <li><strong>AI-Powered Insights:</strong> Smart suggestions for tasks and growth strategies based on startup data.</li>
-                        </ul>
-                    </PitchSection>
-                    <PitchSection title="5. Business Model">
-                        <p>Our business model is a {businessModel}. We offer a free tier for individual founders and small teams, with premium subscription plans that unlock advanced features like unlimited AI insights, team management roles, and in-depth analytics. This freemium approach allows us to capture a wide user base and upsell as startups grow.</p>
-                    </PitchSection>
-                    <PitchSection title="6. Roadmap">
-                        <p>Our 12-month roadmap includes:</p>
-                        <ul>
-                            <li><strong>Q1:</strong> Launch public beta and onboard first 100 startups.</li>
-                            <li><strong>Q2:</strong> Integrate with popular developer tools like GitHub and Slack.</li>
-                            <li><strong>Q3:</strong> Introduce advanced collaboration and resource planning features.</li>
-                            <li><strong>Q4:</strong> Develop a mobile application and expand our AI capabilities.</li>
-                        </ul>
-                    </PitchSection>
-                </div>
-            )}
-        </CardContent>
-        <CardFooter className="flex gap-2">
-            <Button onClick={handleGeneratePitch} disabled={isPending}>
-                {isPending ? (
-                    <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Generating...
-                    </>
-                ) : (
-                    "Generate Pitch"
-                )}
-            </Button>
-            <Button variant="outline" onClick={handleDownloadPPT} disabled={!generatedSlides || isPending}>Download as PPT</Button>
-        </CardFooter>
-      </Card>
-    </div>
-  );
+  return <PitchGeneratorClient startup={startup} />;
 }

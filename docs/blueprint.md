@@ -1,4 +1,4 @@
-# **App Name**: StartupOps
+# **App Name**: Velora
 
 ## Core Features:
 

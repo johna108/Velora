@@ -35,3 +35,6 @@ CREATE POLICY "Users can delete own organizations" ON organizations
 
 -- Update Startups Policy to allow access if user owns the organization
 -- (Optional: keeping existing user_id ownership for now to separate migration concerns)
+
+-- Add priority column to tasks
+ALTER TABLE tasks ADD COLUMN IF NOT EXISTS priority TEXT CHECK (priority IN ('low', 'medium', 'high')) DEFAULT 'medium';

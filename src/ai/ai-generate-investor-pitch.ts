@@ -24,7 +24,7 @@ const SlideSchema = z.object({
   content: z
     .string()
     .describe(
-      'The content of the slide, formatted as markdown with bullet points.'
+      'The content of the slide, formatted as plain text with bullet points. Do not use bold (**) formatting.'
     ),
 });
 

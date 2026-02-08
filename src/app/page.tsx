@@ -66,8 +66,8 @@ export default async function Home() {
                 </Button>
               </div>
 
-              {/* Stats Ribbon */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-12 text-center opacity-70 animate-in fade-in delay-500 duration-1000">
+              {/* Stats Ribbon - Removed as per request */}
+              {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-12 text-center opacity-70 animate-in fade-in delay-500 duration-1000">
                  <div className="flex flex-col items-center">
                     <span className="text-3xl font-bold font-headline">500+</span>
                     <span className="text-xs text-muted-foreground uppercase tracking-wider">Startups</span>
@@ -84,7 +84,7 @@ export default async function Home() {
                     <span className="text-3xl font-bold font-headline">Global</span>
                     <span className="text-xs text-muted-foreground uppercase tracking-wider">Reach</span>
                  </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </section>

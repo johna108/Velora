@@ -68,6 +68,9 @@ export default function PitchGeneratorClient({ startup }: { startup: Startup }) 
         generatedSlides.forEach(slide => {
             const pptxSlide = pptx.addSlide();
             
+            // Explicitly set background to white
+            pptxSlide.background = { color: "FFFFFF" };
+            
             const titleColor = "363636";
             const contentColor = "6A6A6A";
 
@@ -82,7 +85,12 @@ export default function PitchGeneratorClient({ startup }: { startup: Startup }) 
                 color: titleColor
             });
 
-            const content = slide.content.split('\n').map(line => line.replace(/^[*-•]\s*/, '').trim()).filter(line => line).join('\n');
+            // Strip markdown formatting for cleaner PPT output
+            const content = slide.content
+                .split('\n')
+                .map(line => line.replace(/^[*-•]\s*/, '').replace(/\*\*(.*?)\*\*/g, '$1').trim())
+                .filter(line => line)
+                .join('\n');
 
             pptxSlide.addText(content, { 
                 x: 1, 
@@ -123,13 +131,22 @@ export default function PitchGeneratorClient({ startup }: { startup: Startup }) 
                         {generatedSlides.map((slide, index) => (
                         <CarouselItem key={index}>
                             <div className="p-1">
-                            <Card className="flex flex-col justify-center p-6 h-[350px]">
-                                <CardHeader>
-                                    <CardTitle className="text-center">{slide.title}</CardTitle>
+                            <Card className="h-[400px] w-full flex flex-col relative overflow-hidden bg-white text-black border-2 border-slate-200">
+                                <CardHeader className="bg-slate-50 border-b border-slate-100 pb-4">
+                                    <CardTitle className="text-xl font-bold text-slate-800 text-center">{slide.title}</CardTitle>
                                 </CardHeader>
-                                <CardContent className="text-center text-sm whitespace-pre-wrap">
-                                    {slide.content}
+                                <CardContent className="pt-6 overflow-y-auto flex-1 text-left">
+                                     <ul className="list-disc pl-4 space-y-2 text-slate-700">
+                                        {slide.content.split('\n').filter(line => line.trim()).map((line, i) => (
+                                            <li key={i} className="pl-1 text-sm">
+                                                {line.replace(/^[*-•]\s*/, '').replace(/\*\*(.*?)\*\*/g, '$1')}
+                                            </li>
+                                        ))}
+                                     </ul>
                                 </CardContent>
+                                <div className="absolute bottom-2 right-4 text-xs text-slate-400">
+                                    Slide {index + 1}
+                                </div>
                             </Card>
                             </div>
                         </CarouselItem>
